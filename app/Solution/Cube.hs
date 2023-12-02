@@ -28,14 +28,13 @@ parseGame ln =
 parse :: String -> [Game]
 parse = map parseGame . lines
 
-part1 :: String -> Int
+part1, part2 :: String -> Int
 part1 = foldl (\x' x -> x' + solveGame x) 0 . parse
   where
     invalid (r, g, b) = r > 12 || g > 13 || b > 14
     solveGame (gameId, outcomes) =
       if any invalid outcomes then 0 else gameId
 
-part2 :: String -> Int
 part2 = foldl (\x' g -> x' + power g) 0 . parse
   where
     power (_, rounds) = f fst3 rounds * f snd3 rounds * f thd3 rounds
