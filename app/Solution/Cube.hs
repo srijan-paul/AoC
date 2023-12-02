@@ -1,0 +1,1 @@
+module Solution.Cube () where

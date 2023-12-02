@@ -1,0 +1,18 @@
+cabal-version:      3.0
+name:               aoc23
+version:            0.1.0.0
+
+executable aoc23
+    main-is:
+      Main.hs
+    other-modules:   
+      Solution.Cube,
+      Solution.Trebuchet
+    default-extensions:
+      ImportQualifiedPost,
+      OverloadedStrings
+    build-depends:
+      base ^>=4.16.4.0,
+      text ^>=2.0.2
+    hs-source-dirs:   app
+    default-language: Haskell2010
