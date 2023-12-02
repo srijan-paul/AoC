@@ -16,6 +16,7 @@ executable aoc23
       base ^>=4.16.4.0,
       text ^>=2.0.2,
       split ^>=0.2.4,
-      MissingH ^>=1.6.0.1
+      MissingH ^>=1.6.0.1,
+      extra ^>=1.7.4
     hs-source-dirs:   app
     default-language: Haskell2010

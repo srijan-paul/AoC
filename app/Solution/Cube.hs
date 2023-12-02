@@ -1,39 +1,43 @@
-module Solution.Cube (part1) where
+module Solution.Cube (part1, part2) where
 
-import Data.Bifunctor (Bifunctor (first))
 import Data.Char (isAlpha, isDigit, isSpace)
 import Data.List (find)
-import Data.Maybe (fromMaybe)
-import Util (app3, orElse, splitOn)
+import Data.Tuple.Extra (first, fst3, snd3, thd3)
+import Util (app3, splitOn)
 
-parseLine :: String -> (Int, [(Int, Int, Int)])
-parseLine ln =
-  let (gameId', _ : games) =
+type Game =  (Int, [(Int, Int, Int)])
+
+parseGame :: String -> Game
+parseGame ln =
+  let (gameId', _ : roundsS) =
         span (/= ':') $
           dropWhile isAlpha $
             filter (not . isSpace) ln
       gameId = read gameId' :: Int
-      rounds = parseRound . splitOn ',' <$> splitOn ';' games
+      rounds = parseRound . splitOn ',' <$> splitOn ';' roundsS
    in (gameId, rounds)
   where
     parseRound :: [String] -> (Int, Int, Int)
-    parseRound s = (r, g, b)
+    parseRound s = (count' "red", count' "green", count' "blue") `app3` balls
       where
-        (r, g, b) =
-          (count' "red", count' "green", count' "blue") `app3` balls
         balls = parseBall <$> s
         parseBall = first read . span isDigit
         count' color = maybe 0 fst . find ((== color) . snd)
 
-part1 :: String -> Int
-part1 contents =
-  let lines' = lines contents
-   in foldl (\x' x -> x' + solveLine x) 0 lines'
-  where
-    (maxr, maxg, maxb) = (12, 13, 14)
 
-    solveLine ln =
-      let (gameId, outcomes) = parseLine ln
-       in if any (\(r, g, b) -> r > maxr || b > maxb || g > maxg) outcomes
-            then 0
-            else gameId
+parse :: String -> [Game]
+parse = map parseGame . lines
+
+part1 :: String -> Int
+part1 = foldl (\x' x -> x' + solveGame x) 0 . parse
+  where
+    invalid (r, g, b) = r > 12 || g > 13 || b > 14
+    solveGame (gameId, outcomes) =
+       if any invalid outcomes then 0 else gameId
+
+part2 :: String -> Int
+part2 = foldl (\x' g -> x' + power g) 0 . parse 
+  where
+    power (_, rounds) = f fst3 rounds * f snd3 rounds * f thd3 rounds
+    f :: ((Int, Int, Int) -> Int) -> [(Int, Int, Int)] -> Int
+    f selectColor = foldl (\acc r -> max (selectColor r) acc) 0

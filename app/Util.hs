@@ -1,4 +1,4 @@
-module Util (orElse, app3 , splitOn, fmap3) where
+module Util (orElse, app3, splitOn, fmap3, thrd) where
 
 import Data.Maybe (fromMaybe)
 import Data.List.Split (linesBy)
@@ -14,4 +14,6 @@ splitOn = linesBy . (==)
 
 fmap3 :: (a -> b, c -> d, e -> f) -> (a, c, e) -> (b, d, f)
 fmap3 (f, g, h) (a, c, e) = (f a, g c, h e)
+
+thrd (a, b, c) = c
 
