@@ -5,7 +5,8 @@ import Data.List (find)
 import Data.Tuple.Extra (first, fst3, snd3, thd3)
 import Util (app3, splitOn)
 
-type Game =  (Int, [(Int, Int, Int)])
+type Round = (Int, Int, Int)
+type Game = (Int, [Round])
 
 parseGame :: String -> Game
 parseGame ln =
@@ -17,13 +18,12 @@ parseGame ln =
       rounds = parseRound . splitOn ',' <$> splitOn ';' roundsS
    in (gameId, rounds)
   where
-    parseRound :: [String] -> (Int, Int, Int)
+    parseRound :: [String] -> Round
     parseRound s = (count' "red", count' "green", count' "blue") `app3` balls
       where
         balls = parseBall <$> s
         parseBall = first read . span isDigit
         count' color = maybe 0 fst . find ((== color) . snd)
-
 
 parse :: String -> [Game]
 parse = map parseGame . lines
@@ -33,11 +33,11 @@ part1 = foldl (\x' x -> x' + solveGame x) 0 . parse
   where
     invalid (r, g, b) = r > 12 || g > 13 || b > 14
     solveGame (gameId, outcomes) =
-       if any invalid outcomes then 0 else gameId
+      if any invalid outcomes then 0 else gameId
 
 part2 :: String -> Int
-part2 = foldl (\x' g -> x' + power g) 0 . parse 
+part2 = foldl (\x' g -> x' + power g) 0 . parse
   where
     power (_, rounds) = f fst3 rounds * f snd3 rounds * f thd3 rounds
-    f :: ((Int, Int, Int) -> Int) -> [(Int, Int, Int)] -> Int
+    f :: (Round -> Int) -> [Round] -> Int
     f selectColor = foldl (\acc r -> max (selectColor r) acc) 0
