@@ -8,6 +8,7 @@ executable aoc23
     other-modules:   
       Solution.Cube,
       Solution.Trebuchet,
+      Solution.GearRatio,
       Util 
     default-extensions:
       ImportQualifiedPost,
@@ -17,6 +18,9 @@ executable aoc23
       text ^>=2.0.2,
       split ^>=0.2.4,
       MissingH ^>=1.6.0.1,
-      extra ^>=1.7.4
+      extra ^>=1.7.4,
+      reverse-list ^>=0.3.0.0,
+      contiguous,
+      pretty-simple 
     hs-source-dirs:   app
     default-language: Haskell2010
