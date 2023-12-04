@@ -14,17 +14,17 @@ data Number = Number
   }
   deriving (Eq, Show)
 
-data Item
+data Cell
   = Symbol
   | Empty
   | Num Number
   deriving (Eq, Show)
 
-type Grid = Array (Array Item)
+type Grid = Array (Array Cell)
 
 type Coord = (Int, Int)
 
-neighbors :: Coord -> Grid -> [Item]
+neighbors :: Coord -> Grid -> [Cell]
 neighbors (x, y) grid =
   coords <&> \(i, j) -> (grid `index` i) `index` j
   where
@@ -43,14 +43,12 @@ parse = fromList . map (\(idx, line) -> parseRow line idx) . enumerate . lines
   where
     parseRow = parseRow' []
 
-    parseRow' :: [Item] -> String -> Int -> Array Item
+    parseRow' :: [Cell] -> String -> Int -> Array Cell
     parseRow' acc [] row = fromListN (length acc) (reverse acc)
     parseRow' acc ('.' : xs) row = parseRow' (Empty : acc) xs row
-    parseRow' acc s@(x : xs) row =
-      if isDigit x
-        then -- repeat the number N times where N = # of digits in the number.
-
-          let (digits, rest) = span isDigit s
+    parseRow' acc s@(x : xs) row
+      | isDigit x =
+          let (digits, rest) = span isDigit s -- repeat the number N times where N = # of digits in the number.
               (num, len) = (read digits :: Int, length digits)
               startPos = length acc
               nums =
@@ -63,9 +61,8 @@ parse = fromList . map (\(idx, line) -> parseRow line idx) . enumerate . lines
                         _end = startPos + len
                       }
            in parseRow' (nums <> acc) rest row
-        else parseRow' (Symbol : acc) xs row
+      | otherwise = parseRow' (Symbol : acc) xs row
 
-part1, part2 :: String -> Int
 part1 s = go 0 (parse s) (0, 0)
   where
     go :: Int -> Grid -> Coord -> Int
@@ -78,7 +75,6 @@ part1 s = go 0 (parse s) (0, 0)
               then go (acc + val) grid (i, endIndex)
               else go acc grid (i, j + 1)
           _ -> go acc grid (i, j + 1)
-
 
 part2 s = go 0 (parse s) (0, 0)
   where
@@ -94,11 +90,11 @@ part2 s = go 0 (parse s) (0, 0)
                   else go acc grid (i, j + 1)
           _ -> go acc grid (i, j + 1)
 
-    uniqueNums :: [Item] -> [Int]
-    uniqueNums = map _val . collectNums [] 
+    uniqueNums :: [Cell] -> [Int]
+    uniqueNums = map _val . collectNums []
       where
         -- collect unique numbers from a list of numbers surrounding a cell
-        collectNums :: [Number] -> [Item] -> [Number]
+        collectNums :: [Number] -> [Cell] -> [Number]
         collectNums acc (Num num@Number {_val = val, _row = row, _start = s, _end = e} : xs) =
           if all
             ( \num@Number {_val = val2, _row = row2, _start = s2, _end = e2} ->
