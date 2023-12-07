@@ -12,6 +12,7 @@ executable aoc23
       Solution.Scratchcards,
       Solution.Day5,
       Solution.Day6,
+      Solution.Day7,
       Util 
     default-extensions:
       ImportQualifiedPost,

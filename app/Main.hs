@@ -7,10 +7,13 @@ import Solution.Scratchcards qualified as Day4
 import Solution.Trebuchet qualified as Day1
 import Solution.Day5 qualified as Day5
 import Solution.Day6 qualified as Day6
+import Solution.Day7 qualified as Day7
 import System.Environment (getArgs)
 import Text.Pretty.Simple (pPrint)
+import Control.Arrow ((&&&))
 
 main :: IO ()
 main = do
   input <- getArgs >>= readFile . head
-  print $ Day6.part2 input
+  pPrint $ (Day7.part1 &&& Day7.part2) input 
+

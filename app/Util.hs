@@ -11,7 +11,8 @@ module Util
     first3,
     readInt,
     nonEmpty,
-    (|>)
+    count,
+    (|>),
   )
 where
 
@@ -57,3 +58,6 @@ readInt = read
 
 nonEmpty :: Foldable t => t a -> Bool
 nonEmpty = not . null
+
+count :: Eq a => a -> [a] -> Int
+count x = length . filter (== x)
