@@ -10,6 +10,8 @@ executable aoc23
       Solution.Trebuchet,
       Solution.GearRatio,
       Solution.Scratchcards,
+      Solution.Day5,
+      Solution.Day6,
       Util 
     default-extensions:
       ImportQualifiedPost,

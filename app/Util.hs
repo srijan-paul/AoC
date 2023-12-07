@@ -1,4 +1,19 @@
-module Util (orElse, app2, app3, splitOn, fmap3, enumerate, countBy) where
+module Util
+  ( orElse,
+    app2,
+    app3,
+    splitOn,
+    fmap3,
+    enumerate,
+    countBy,
+    dropUpto,
+    or',
+    first3,
+    readInt,
+    nonEmpty,
+    (|>)
+  )
+where
 
 import Data.List.Split (linesBy)
 import Data.Maybe (fromMaybe)
@@ -23,3 +38,22 @@ enumerate = zip [0 ..]
 
 countBy :: (a -> Bool) -> [a] -> Int
 countBy p = length . filter p
+
+dropUpto :: (a -> Bool) -> [a] -> [a]
+dropUpto p = tail . dropWhile p
+
+or' :: (a -> Bool) -> (a -> Bool) -> a -> Bool
+or' f g x = f x || g x
+
+first3 :: [a] -> (a, a, a)
+first3 (a : b : c : _) = (a, b, c)
+first3 _ = error "first3: list too short"
+
+readInt :: String -> Int
+readInt = read
+
+(|>) :: a -> (a -> b) -> b
+(|>) = flip ($)
+
+nonEmpty :: Foldable t => t a -> Bool
+nonEmpty = not . null
