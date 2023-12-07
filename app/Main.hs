@@ -12,7 +12,6 @@ import System.Environment (getArgs)
 import Text.Pretty.Simple (pPrint)
 import Control.Arrow ((&&&))
 
-main :: IO ()
 main = do
   input <- getArgs >>= readFile . head
   pPrint $ (Day7.part1 &&& Day7.part2) input 

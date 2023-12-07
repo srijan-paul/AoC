@@ -17,7 +17,6 @@ data Power
   | FourOfKind
   | FiveOfKind
   deriving (Show, Eq, Ord)
-
 data Hand = Hand String Power deriving (Show)
 type Bids = [(Hand, Int)] -- (Hand, Bid amount)
 
@@ -72,7 +71,6 @@ parseWith powerFn = map (bimap parseHand readInt . span (/= ' ')) . lines
 solveWith :: (String -> Power) -> String  -> String -> Int
 solveWith powerFn cardList s = snd $ foldl combine (1, 0) sortedCards
   where
-    crds = show $ s |> parseWith powerFn |> sortBy (compareBidsWith cardList) 
     sortedCards = s |> parseWith powerFn |> sortBy (compareBidsWith cardList) |> map snd
     combine (i, acc) x = (i + 1, x * i + acc)
 
