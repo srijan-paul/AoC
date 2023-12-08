@@ -13,10 +13,10 @@ executable aoc23
       Solution.Day5,
       Solution.Day6,
       Solution.Day7,
+      Solution.Day8,
       Util 
     default-extensions:
       ImportQualifiedPost,
-      OverloadedStrings,
       TupleSections
     build-depends:
       base ^>=4.16.4.0,

@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Solution.Trebuchet (part1, part2) where
 
 import Data.Char (isDigit)

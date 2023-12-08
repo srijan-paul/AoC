@@ -49,7 +49,7 @@ cards2 = reverse "AKQT98765432J"
 
 compareHandsWith :: [Char] -> Hand -> Hand -> Ordering
 compareHandsWith cardList (Hand s1 type1) (Hand s2 type2) =
-	case compare type1 type2 of
+  case compare type1 type2 of
     EQ -> compareS s1 s2
     ltOrGt -> ltOrGt
   where
@@ -59,14 +59,14 @@ compareHandsWith cardList (Hand s1 type1) (Hand s2 type2) =
       ltOrGt -> ltOrGt
 
 compareBidsWith :: [Char] -> (Hand, Int) -> (Hand, Int) -> Ordering
-compareBidsWith cardList b1 b2 = compareHandsWith cardList (fst b1) (fst b2)
+compareBidsWith cardList = compareHandsWith cardList `on` fst 
 
 parseWith powerFn = map (bimap parseHand readInt . span (/= ' ')) . lines
   where
     parseHand s = Hand s (powerFn s)
 
 solveWith :: (String -> HandType) -> String -> String -> Int
-solveWith powerFn cardList s = snd $ foldl combine (1, 0) sortedCards
+solveWith powerFn cardList s = sum $ zipWith (*) [1..] sortedCards
   where
     sortedCards =
       s
@@ -76,5 +76,4 @@ solveWith powerFn cardList s = snd $ foldl combine (1, 0) sortedCards
     combine (i, acc) x = (i + 1, x * i + acc)
 
 part1 = solveWith powerOfCard cards
-
 part2 = solveWith powerOfCard2 cards2

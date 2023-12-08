@@ -9,15 +9,20 @@ module Util
     dropUpto,
     or',
     first3,
+    first2,
     readInt,
     nonEmpty,
     count,
+    stripPrefix',
+    stripSuffix',
     (|>),
   )
 where
 
 import Data.List.Split (linesBy)
 import Data.Maybe (fromMaybe)
+import Data.List (stripPrefix)
+import Data.List.Extra (stripSuffix)
 
 orElse :: Maybe a -> a -> a
 orElse = flip fromMaybe
@@ -61,3 +66,16 @@ nonEmpty = not . null
 
 count :: Eq a => a -> [a] -> Int
 count x = length . filter (== x)
+
+
+stripPrefix' :: Eq a => [a] -> [a] -> [a]
+stripPrefix' p s = stripPrefix p s `orElse` s 
+
+
+stripSuffix' :: Eq a => [a] -> [a] -> [a]
+stripSuffix' p s = stripSuffix p s `orElse` s 
+
+first2 :: [a] -> (a, a)
+first2 (a : b : _) = (a, b)
+first2 _ = error "first2: list too short"
+
