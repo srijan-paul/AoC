@@ -16,6 +16,7 @@ executable aoc23
       Solution.Day8,
       Solution.Day9,
       Solution.Day10,
+      Solution.Day11,
       Util 
     default-extensions:
       ImportQualifiedPost,
