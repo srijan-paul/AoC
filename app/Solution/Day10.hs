@@ -1,13 +1,10 @@
 module Solution.Day10 (clean, parse, part1, part2) where
 
-import Data.Function (on)
-import Data.List (groupBy)
 import Data.List qualified
-import Data.Maybe (catMaybes, fromJust, isJust, mapMaybe)
+import Data.Maybe (fromJust)
 import Data.Primitive.Contiguous
   ( Array,
     Contiguous (Element, index, size),
-    find,
     findIndex,
     fromList,
     imap',
@@ -15,9 +12,7 @@ import Data.Primitive.Contiguous
     replaceAt,
     toList,
   )
-import Data.Text (pack, replace, unpack)
-import Debug.Trace (trace, traceShow)
-import Util (dropUpto, index2d, orElse, safeIndex, safeIndex2d)
+import Util (index2d, orElse)
 
 type Grid = Array (Array Char)
 
