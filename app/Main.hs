@@ -20,4 +20,3 @@ main = do
   input <- getArgs >>= readFile . head
   pPrint $ (Day11.part1 &&& Day11.part2) input
 
-

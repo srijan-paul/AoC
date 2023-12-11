@@ -13,20 +13,24 @@ data Universe = Universe
   }
   deriving (Show)
 
-getBlankIndices :: [String] -> [Int]
-getBlankIndices = map fst . filter (all (== '.') . snd) . zip [0 ..]
-
 parse :: String -> Universe
 parse s =
   let grid = lines s
    in Universe
         (blankRows grid)
         (blankCols grid)
-        (grid |> withIndices |> concat |> filter ((== '#') . snd) |> map fst |> fromList)
+        ( grid
+            |> withIndices
+            |> concat
+            |> filter ((== '#') . snd)
+            |> map fst
+            |> fromList
+        )
   where
     withIndices :: [[a]] -> [[((Int, Int), a)]]
     withIndices = zipWith (\r -> zipWith (\c x -> ((r, c), x)) [0 ..]) [0 ..]
 
+    getBlankIndices = map fst . filter (all (== '.') . snd) . zip [0 ..]
     blankRows = getBlankIndices
     blankCols = getBlankIndices . transpose
 
@@ -53,4 +57,3 @@ solve expansionFactor s =
 part1, part2 :: String -> Int
 part1 = solve 2
 part2 = solve 1000000
-
