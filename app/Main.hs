@@ -10,11 +10,12 @@ import Solution.Day6 qualified as Day6
 import Solution.Day7 qualified as Day7
 import Solution.Day8 qualified as Day8
 import Solution.Day9 qualified as Day9
+import Solution.Day10 qualified as Day10
 import System.Environment (getArgs)
 import Text.Pretty.Simple (pPrint)
 import Control.Arrow ((&&&))
 
 main = do
   input <- getArgs >>= readFile . head
-  pPrint $  (Day9.part1 &&& Day9.part2) input 
+  pPrint $ (Day10.part1 &&& Day10.part2) input
 

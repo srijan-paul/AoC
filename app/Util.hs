@@ -15,14 +15,20 @@ module Util
     count,
     stripPrefix',
     stripSuffix',
+    safeIndex,
+    safeIndex2d,
+    index2d,
     (|>),
   )
 where
 
-import Data.List.Split (linesBy)
-import Data.Maybe (fromMaybe)
+import Control.Monad (guard)
+import Data.Functor ((<$))
 import Data.List (stripPrefix)
 import Data.List.Extra (stripSuffix)
+import Data.List.Split (linesBy)
+import Data.Maybe (fromMaybe)
+import Data.Primitive.Contiguous (Contiguous (Element, index, size))
 
 orElse :: Maybe a -> a -> a
 orElse = flip fromMaybe
@@ -46,7 +52,8 @@ countBy :: (a -> Bool) -> [a] -> Int
 countBy p = length . filter p
 
 dropUpto :: (a -> Bool) -> [a] -> [a]
-dropUpto p = tail . dropWhile p
+dropUpto p [] = []
+dropUpto p (x : xs) = if p x then xs else dropUpto p xs
 
 or' :: (a -> Bool) -> (a -> Bool) -> a -> Bool
 or' f g x = f x || g x
@@ -67,15 +74,30 @@ nonEmpty = not . null
 count :: Eq a => a -> [a] -> Int
 count x = length . filter (== x)
 
-
 stripPrefix' :: Eq a => [a] -> [a] -> [a]
-stripPrefix' p s = stripPrefix p s `orElse` s 
-
+stripPrefix' p s = stripPrefix p s `orElse` s
 
 stripSuffix' :: Eq a => [a] -> [a] -> [a]
-stripSuffix' p s = stripSuffix p s `orElse` s 
+stripSuffix' p s = stripSuffix p s `orElse` s
 
 first2 :: [a] -> (a, a)
 first2 (a : b : _) = (a, b)
 first2 _ = error "first2: list too short"
 
+safeIndex :: (Contiguous arr, Element arr a) => arr a -> Int -> Maybe a
+safeIndex arr i =
+  if i < size arr && i >= 0
+    then Just $ index arr i
+    else Nothing
+
+index2d :: (Contiguous arr, Element arr a, Element arr (arr a)) => arr (arr a) -> Int -> Int -> a
+index2d arr rowIndex colIndex = (arr `index` rowIndex) `index` colIndex
+
+safeIndex2d ::
+  (Contiguous arr, Element arr a, Element arr (arr a)) =>
+  arr (arr a) ->
+  (Int, Int) ->
+  Maybe a
+safeIndex2d arr (rowIndex, colIndex) = do
+  row <- safeIndex arr rowIndex
+  safeIndex row colIndex
