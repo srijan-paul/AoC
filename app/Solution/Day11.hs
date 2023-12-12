@@ -1,6 +1,6 @@
 module Solution.Day11 (parse, part1, part2) where
 
-import Data.List (transpose)
+import Data.List (transpose, findIndices)
 import Data.Primitive.Contiguous (Array, Contiguous (index, size), fromList)
 import Debug.Trace (trace, traceShow)
 import Util (countBy, (|>))
@@ -30,15 +30,14 @@ parse s =
     withIndices :: [[a]] -> [[((Int, Int), a)]]
     withIndices = zipWith (\r -> zipWith (\c x -> ((r, c), x)) [0 ..]) [0 ..]
 
-    getBlankIndices = map fst . filter (all (== '.') . snd) . zip [0 ..]
-    blankRows = getBlankIndices
-    blankCols = getBlankIndices . transpose
+    blankRows = findIndices $ all (== '.')
+    blankCols = blankRows . transpose
 
 distance Universe {uBlankRows = blankRows, uBlankCols = blankCols} factor (x1, y1) (x2, y2) =
-  abs (x1 - x2) + abs (y1 - y2) + (rowSpace + colSpace) * (factor - 1)
+  abs (x1 - x2) + abs (y1 - y2) + (emptyRows + emptyCols) * (factor - 1)
   where
-    rowSpace = countBy (\r -> r > min x1 x2 && r < max x1 x2) blankRows
-    colSpace = countBy (\r -> r > min y1 y2 && r < max y1 y2) blankCols
+    emptyRows = countBy (\r -> r > min x1 x2 && r < max x1 x2) blankRows
+    emptyCols = countBy (\r -> r > min y1 y2 && r < max y1 y2) blankCols
 
 solve :: Int -> String -> Int
 solve expansionFactor s =
