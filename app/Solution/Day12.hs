@@ -3,11 +3,10 @@ module Solution.Day12 (part1, part2) where
 import Control.Arrow (Arrow (second))
 import Data.Bifunctor (Bifunctor (bimap))
 import Data.List.Extra (intercalate, splitOn)
+import Util (readInt)
 import Data.Map qualified as M
-import Debug.Trace (trace)
-import Util (count, orElse, readInt)
 
-type Row = (String, [Int])
+type Row = (String, [Int]) -- ("???#...", [1, 2, 3...])
 
 parse :: String -> [Row]
 parse = map parseLine . lines
@@ -23,7 +22,9 @@ numArrangements (line, hashCounts) = fst $ go M.empty line hashCounts
     go memo s xs | M.member (s, xs) memo = (memo M.! (s, xs), memo)
     go memo [] [] = (1, memo)
     go memo [] xs = (0, M.insert ([], xs) 0 memo)
-    go memo s [] = memoizeWith memo s [] (if all (`elem` "?.") s then 1 else 0)
+    go memo s [] =
+      let result = if all (`elem` "?.") s then 1 else 0
+       in (result, M.insert (s, []) result memo)
     go memo s@('?' : cs) hashCounts@(n : ns) =
       let (withHash, memo') = go memo ('#' : cs) hashCounts
           (withDot, memo'') = go memo' ('.' : cs) hashCounts
@@ -31,11 +32,9 @@ numArrangements (line, hashCounts) = fst $ go M.empty line hashCounts
        in (result, M.insert (s, hashCounts) result memo'')
 
     -- dots can be skipped
-
     go memo s@('.' : cs) xs =
       let (result, memo') = go memo cs xs
        in (result, M.insert (s, xs) result memo')
-
     -- we've encountered a `#` symbol.
     -- We must now place at N `#`s consecutively, where N = head hashCounts
     go memo s@('#' : cs) hashCounts@(n : ns) =
@@ -45,11 +44,7 @@ numArrangements (line, hashCounts) = fst $ go M.empty line hashCounts
            in (result, M.insert (s, hashCounts) result memo')
         else (0, M.insert (s, hashCounts) 0 memo)
 
-    memoizeWith :: Cache -> String -> [Int] -> Int -> (Int, Cache)
-    memoizeWith memo s xs v = case M.lookup (s, xs) memo of
-      Just val -> (val, memo)
-      Nothing -> (v, M.insert (s, xs) v memo)
-
+--- | returns true if `n` hashes can be placed in `s` starting at position 0.
 canPlaceHashes n s
   | n > length s = False
   | otherwise =
