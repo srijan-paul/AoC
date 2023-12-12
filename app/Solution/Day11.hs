@@ -1,10 +1,8 @@
-module Solution.Day11 (parse, part1, part2) where
+module Solution.Day11 (part1, part2) where
 
 import Data.List (transpose, findIndices)
 import Data.Primitive.Contiguous (Array, Contiguous (index, size), fromList)
-import Debug.Trace (trace, traceShow)
 import Util (countBy, (|>))
-import Prelude
 
 data Universe = Universe
   { uBlankRows :: [Int],
@@ -33,11 +31,11 @@ parse s =
     blankRows = findIndices $ all (== '.')
     blankCols = blankRows . transpose
 
-distance Universe {uBlankRows = blankRows, uBlankCols = blankCols} factor (x1, y1) (x2, y2) =
+distance universe factor (x1, y1) (x2, y2) =
   abs (x1 - x2) + abs (y1 - y2) + (emptyRows + emptyCols) * (factor - 1)
   where
-    emptyRows = countBy (\r -> r > min x1 x2 && r < max x1 x2) blankRows
-    emptyCols = countBy (\r -> r > min y1 y2 && r < max y1 y2) blankCols
+    emptyRows = countBy (\r -> r > min x1 x2 && r < max x1 x2) (uBlankRows universe)
+    emptyCols = countBy (\r -> r > min y1 y2 && r < max y1 y2) (uBlankCols universe)
 
 solve :: Int -> String -> Int
 solve expansionFactor s =
