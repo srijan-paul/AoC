@@ -19,5 +19,5 @@ import Control.Arrow ((&&&))
 
 main = do
   input <- getArgs >>= readFile . head
-  pPrint $ Day12.part1 input 
+  pPrint $ Day12.part2 input 
 

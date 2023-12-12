@@ -1,47 +1,70 @@
-module Solution.Day12 (parse, part1, part2) where
+module Solution.Day12 (part1, part2) where
 
 import Control.Arrow (Arrow (second))
-import Data.List.Extra (splitOn)
-import Debug.Trace (trace, traceShow)
-import Util (count, readInt)
+import Data.Bifunctor (Bifunctor (bimap))
+import Data.List.Extra (intercalate, splitOn)
+import Data.Map qualified as M
+import Debug.Trace (trace)
+import Util (count, orElse, readInt)
 
-type Line = (String, [Int])
+type Row = (String, [Int])
 
+parse :: String -> [Row]
 parse = map parseLine . lines
   where
     parseLine = second (map readInt . splitOn ",") . span (/= ' ')
 
-numArrangements :: Line -> Int
-numArrangements (line, hashCounts) = go line hashCounts
+type Cache = M.Map Row Int
+
+numArrangements :: Row -> Int
+numArrangements (line, hashCounts) = fst $ go M.empty line hashCounts
   where
-    go :: String -> [Int] -> Int
-    go [] [] = 1
-    go [] xs = 0 -- we've run out of tiles, but still need more "#"s.
-    go s [] = if all (`elem` "?.") s then 1 else 0
-    go s@('?' : cs) hashCounts@(n : ns) =
-      let scoreWithHash = goHash s hashCounts
-          scoreWithDot = go cs hashCounts
-       in scoreWithHash + scoreWithDot
+    go :: Cache -> String -> [Int] -> (Int, Cache)
+    go memo s xs | M.member (s, xs) memo = (memo M.! (s, xs), memo)
+    go memo [] [] = (1, memo)
+    go memo [] xs = (0, M.insert ([], xs) 0 memo)
+    go memo s [] = memoizeWith memo s [] (if all (`elem` "?.") s then 1 else 0)
+    go memo s@('?' : cs) hashCounts@(n : ns) =
+      let (withHash, memo') = go memo ('#' : cs) hashCounts
+          (withDot, memo'') = go memo' ('.' : cs) hashCounts
+          result = withHash + withDot
+       in (result, M.insert (s, hashCounts) result memo'')
+
     -- dots can be skipped
-    go ('.' : cs) hashCounts = go cs hashCounts
+
+    go memo s@('.' : cs) xs =
+      let (result, memo') = go memo cs xs
+       in (result, M.insert (s, xs) result memo')
+
     -- we've encountered a `#` symbol.
     -- We must now place at N `#`s consecutively, where N = head hashCounts
-    go s@('#' : cs) hashCounts = goHash s hashCounts
-
-    -- \| returns the number of possible arrangement when a `#` is placed
-    -- in the first character of `s`.
-    goHash :: String -> [Int] -> Int
-    goHash s (n : ns) =
+    go memo s@('#' : cs) hashCounts@(n : ns) =
       if canPlaceHashes n s
-        then go (drop (n + 1) s) ns
-        else 0
+        then
+          let (result, memo') = go memo (drop (n + 1) s) ns
+           in (result, M.insert (s, hashCounts) result memo')
+        else (0, M.insert (s, hashCounts) 0 memo)
 
-canPlaceHashes :: Int -> String -> Bool
-canPlaceHashes n s | n > length s = False
-canPlaceHashes n s =
-  let (toHash, rest) = splitAt n s
-   in all (`elem` "#?") toHash && (null rest || elem (head rest) "?.")
+    memoizeWith :: Cache -> String -> [Int] -> Int -> (Int, Cache)
+    memoizeWith memo s xs v = case M.lookup (s, xs) memo of
+      Just val -> (val, memo)
+      Nothing -> (v, M.insert (s, xs) v memo)
+
+canPlaceHashes n s
+  | n > length s = False
+  | otherwise =
+      let (hashes, rest) = splitAt n s
+       in all (`elem` "#?") hashes && (null rest || elem (head rest) "?.")
+
+expandInput =
+  unlines . map processLine . lines
+  where
+    processLine =
+      uncurry (++)
+        . bimap (repeatWith "?") (repeatWith ",")
+        . span (/= ' ')
+    repeatWith sep l = intercalate sep (replicate 5 l)
 
 part1, part2 :: String -> Int
 part1 = sum . map numArrangements . parse
-part2 = undefined
+part2 = part1 . expandInput
