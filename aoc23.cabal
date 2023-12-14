@@ -19,10 +19,12 @@ executable aoc23
       Solution.Day11,
       Solution.Day12,
       Solution.Day13,
+      Solution.Day14,
       Util 
     default-extensions:
       ImportQualifiedPost,
-      TupleSections
+      TupleSections,
+      NumericUnderscores
     build-depends:
       base ^>=4.16.4.0,
       text ^>=2.0.2,
