@@ -8,5 +8,5 @@ import Control.Arrow ((&&&))
 
 main = do
   input <- getArgs >>= readFile . head
-  pPrint $ AoC.part1 input 
+  pPrint $ (AoC.part1 &&& AoC.part2) input 
 
