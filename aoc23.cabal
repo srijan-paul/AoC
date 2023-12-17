@@ -21,7 +21,10 @@ executable aoc23
       Solution.Day13,
       Solution.Day14,
       Solution.Day15,
-      Util 
+      Solution.Day16,
+      Solution.Day17,
+      Util,
+      Queue
     default-extensions:
       ImportQualifiedPost,
       TupleSections,
@@ -36,6 +39,7 @@ executable aoc23
       contiguous,
       pretty-simple,
       containers,
-      insert-ordered-containers
+      insert-ordered-containers,
+      vector
     hs-source-dirs:   app
     default-language: Haskell2010

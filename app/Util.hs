@@ -18,6 +18,7 @@ module Util
     safeIndex,
     safeIndex2d,
     index2d,
+    bfs,
     (|>),
   )
 where
@@ -29,6 +30,8 @@ import Data.List.Extra (stripSuffix)
 import Data.List.Split (linesBy)
 import Data.Maybe (fromMaybe)
 import Data.Primitive.Contiguous (Contiguous (Element, index, size))
+import Data.Set qualified as S
+import Queue qualified as Q
 
 orElse :: Maybe a -> a -> a
 orElse = flip fromMaybe
@@ -101,3 +104,17 @@ safeIndex2d ::
 safeIndex2d arr (rowIndex, colIndex) = do
   row <- safeIndex arr rowIndex
   safeIndex row colIndex
+
+bfs :: (Foldable f, Ord a) => a -> (a -> f a) -> S.Set a
+bfs rootNode getNeighbors =
+  go S.empty (Q.singleton rootNode)
+  where
+    go visitedNodes queue
+      | Q.isEmpty queue = visitedNodes
+      | otherwise =
+          let (node, q) = Q.pop queue
+              newQueue = Q.enqueueAll (getNeighbors node) q
+           in if S.member node visitedNodes
+                then go visitedNodes q
+                else go (S.insert node visitedNodes) newQueue
+
